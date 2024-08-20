@@ -3,6 +3,8 @@
 
 Continuous Calendar is a bare-bones calendar built with React and Tailwindcss. It does not include event creation and display, as that's left up to your discretion.
 
+[Live Demo](https://continuous-calendar.vercel.app/)
+
 ### So what does it do? ✨
 
 - Displays 12 months at once, with respect to the specified year.
