@@ -6,7 +6,7 @@ const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 interface ContinuousCalendarProps {
-  fullHeight: boolean,
+  fullHeight?: boolean,
   onClick?: (_day:number, _month: number, _year: number) => void;
 }
 
