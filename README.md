@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# React Continuous Calendar
 
-First, run the development server:
+Continuous Calendar is a bare-bones calendar built with React and Tailwindcss. It does not include event creation and display, as that's left up to your discretion.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+[Live Demo](https://continuous-calendar.vercel.app/)
+
+### So what does it do? ✨
+
+- Displays 12 months at once, with respect to the specified year.
+- Allows for quick-navigation to specific months and Today.
+- Clicking on a cell triggers the onClick event with (day, month, year).
+- Responsive; supports mobile, tablet, and desktop views.
+
+
+### Installation 💻
+
+There is no npm package, it's just 1 file you can customize. Simply download or copy the file:
+
+`/components/ContinuousCalendar.tsx`.
+
+Additionally, I have applied the following global css:
+
+```
+*:focus:not(ol) {
+  @apply outline-none ring-2 ring-cyan-400 border-cyan-400;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Contribution 🔮
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+If you wish to contribute to this project, clone the repo and run it locally using `npm run dev`.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+## Screenshots
 
-To learn more about Next.js, take a look at the following resources:
+![App Screenshot](https://i.postimg.cc/7qtz4srV/Screenshot-2024-08-19-at-10-28-57-PM.png)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+![App Screenshot](https://i.postimg.cc/Q843fyB2/Screenshot-2024-08-19-at-10-36-31-PM.png)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Inspiration
 
-## Deploy on Vercel
+![App Screenshot](https://i.postimg.cc/qk1gyQGF/Screenshot-2024-08-19-at-10-45-56-PM.png)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
