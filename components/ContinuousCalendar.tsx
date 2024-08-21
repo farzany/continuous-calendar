@@ -6,10 +6,11 @@ const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 interface ContinuousCalendarProps {
+  fullHeight: boolean,
   onClick?: (_day:number, _month: number, _year: number) => void;
 }
 
-export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
+export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ fullHeight = false, onClick }) => {
   const today = new Date();
   const dayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -21,22 +22,27 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
       (ref) => ref && ref.getAttribute('data-month') === `${monthIndex}` && ref.getAttribute('data-day') === `${dayIndex}`,
     );
 
-    if (targetDayIndex !== -1 && dayRefs.current[targetDayIndex]) {
+    const targetElement = dayRefs.current[targetDayIndex];
+
+    if (targetDayIndex !== -1 && targetElement) {
       const container = document.querySelector('.calendar-container');
+      const elementRect = targetElement.getBoundingClientRect();
+      const is2xl = window.matchMedia('(min-width: 1536px)').matches;
+      const offsetFactor = is2xl ? 3 : 2.5;
 
-      if (container && dayRefs.current[targetDayIndex]) {
-        const targetElement = dayRefs.current[targetDayIndex];
+      if (container) {
         const containerRect = container.getBoundingClientRect();
-        if (!targetElement) { return; }
-        const elementRect = targetElement.getBoundingClientRect();
-
-        const is2xl = window.matchMedia('(min-width: 1536px)').matches;
-        const offsetFactor = is2xl ? 3 : 2.5;
-
         const offset = elementRect.top - containerRect.top - (containerRect.height / offsetFactor) + (elementRect.height / 2);
 
         container.scrollTo({
           top: container.scrollTop + offset,
+          behavior: 'smooth',
+        });
+      } else {
+        const offset = window.scrollY + elementRect.top - (window.innerHeight / offsetFactor) + (elementRect.height / 2);
+  
+        window.scrollTo({
+          top: offset,
           behavior: 'smooth',
         });
       }
@@ -120,7 +126,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
   }, [year]);
 
   useEffect(() => {
-    const calendarContainer = document.querySelector('.calendar-container');
+    const root = document.querySelector('.calendar-container') || document;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -132,7 +138,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
         });
       },
       {
-        root: calendarContainer,
+        root,
         rootMargin: '-75% 0px -25% 0px',
         threshold: 0,
       },
@@ -150,7 +156,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick 
   }, []);
 
   return (
-    <div className="calendar-container max-h-[80vh] overflow-y-scroll rounded-2xl bg-white pb-10 text-slate-800">
+    <div className={`rounded-2xl bg-white pb-10 text-slate-800 ${fullHeight ? '' : 'calendar-container max-h-[80vh] overflow-y-scroll'}`}>
       <div className="sticky -top-px z-50 w-full bg-white px-5 pt-7 sm:px-10 sm:pt-10">
         <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-6">
           <div className="flex flex-wrap gap-2 sm:gap-3">
