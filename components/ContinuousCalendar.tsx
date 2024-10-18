@@ -6,11 +6,10 @@ const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 interface ContinuousCalendarProps {
-  fullHeight?: boolean,
   onClick?: (_day:number, _month: number, _year: number) => void;
 }
 
-export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ fullHeight = false, onClick }) => {
+export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ onClick }) => {
   const today = new Date();
   const dayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -73,14 +72,15 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ fullHeig
   }
 
   const generateCalendar = useMemo(() => {
-    const daysOfYear = (): { month: number; day: number }[] => {
-      const daysOfYear = [];
+    const today = new Date();
 
+    const daysInYear = (): { month: number; day: number }[] => {
+      const daysInYear = [];
       const startDayOfWeek = new Date(year, 0, 1).getDay();
 
       if (startDayOfWeek < 6) {
         for (let i = 0; i < startDayOfWeek; i++) {
-          daysOfYear.push({ month: -1, day: 32 - startDayOfWeek + i });
+          daysInYear.push({ month: -1, day: 32 - startDayOfWeek + i });
         }
       }
 
@@ -88,45 +88,68 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ fullHeig
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
         for (let day = 1; day <= daysInMonth; day++) {
-          daysOfYear.push({ month, day });
+          daysInYear.push({ month, day });
         }
       }
 
-      return daysOfYear;
+      const lastWeekDayCount = daysInYear.length % 7;
+      if (lastWeekDayCount > 0) {
+        const extraDaysNeeded = 7 - lastWeekDayCount;
+        for (let day = 1; day <= extraDaysNeeded; day++) {
+          daysInYear.push({ month: 0, day });
+        }
+      }
+    
+      return daysInYear;
     };
 
-    const calendarDays = daysOfYear();
+    const calendarDays = daysInYear();
 
-    const calendar = calendarDays.map(({ month, day }, index) => {
-      const isNewMonth = index === 0 || calendarDays[index - 1].month !== month;
-      const isToday = today.getMonth() === month && today.getDate() === day && today.getFullYear() === year;
+    const calendarWeeks = [];
+    for (let i = 0; i < calendarDays.length; i += 7) {
+      calendarWeeks.push(calendarDays.slice(i, i + 7));
+    }
 
-      return (
-        <div
-          key={`${month}-${day}`}
-          ref={(el) => { dayRefs.current[index] = el; }}
-          data-month={month}
-          data-day={day}
-          onClick={() => handleDayClick(day, month, year)}
-          className={`relative z-10 m-[-0.5px] aspect-square w-full grow cursor-pointer rounded-xl border font-medium transition-all hover:z-20 hover:border-cyan-400 sm:-m-px sm:size-20 sm:rounded-2xl sm:border-2 lg:size-36 lg:rounded-3xl 2xl:size-40`}
-        >
-          <span className={`absolute left-1 top-1 flex size-5 items-center justify-center rounded-full text-xs sm:size-6 sm:text-sm lg:left-2 lg:top-2 lg:size-8 lg:text-base ${isToday ? 'bg-blue-500 font-semibold text-white' : ''} ${month < 0 ? 'text-slate-400' : 'text-slate-800'}`}>
-            {day}
-          </span>
-          {isNewMonth && (
-            <span className="absolute bottom-0.5 left-0 w-full truncate px-1.5 text-sm font-semibold text-slate-300 sm:bottom-0 sm:text-lg lg:bottom-2.5 lg:left-3.5 lg:-mb-1 lg:w-fit lg:px-0 lg:text-xl 2xl:mb-[-4px] 2xl:text-2xl">
-              {monthNames[month]}
-            </span>
-          )}
-        </div>
-      );
-    });
+    const calendar = calendarWeeks.map((week, weekIndex) => (
+      <div className="flex w-full" key={`week-${weekIndex}`}>
+        {week.map(({ month, day }, dayIndex) => {
+          const index = weekIndex * 7 + dayIndex;
+          const isNewMonth = index === 0 || calendarDays[index - 1].month !== month;
+          const isToday = today.getMonth() === month && today.getDate() === day && today.getFullYear() === year;
+
+          return (
+            <div
+              key={`${month}-${day}`}
+              ref={(el) => { dayRefs.current[index] = el; }}
+              data-month={month}
+              data-day={day}
+              onClick={() => handleDayClick(day, month, year)}
+              className={`relative z-10 m-[-0.5px] aspect-square w-full grow cursor-pointer rounded-xl border font-medium transition-all hover:z-20 hover:border-cyan-400 sm:-m-px sm:size-20 sm:rounded-2xl sm:border-2 lg:size-36 lg:rounded-3xl 2xl:size-40`}
+            >
+              <span className={`absolute left-1 top-1 flex size-5 items-center justify-center rounded-full text-xs sm:size-6 sm:text-sm lg:left-2 lg:top-2 lg:size-8 lg:text-base ${isToday ? 'bg-blue-500 font-semibold text-white' : ''} ${month < 0 ? 'text-slate-400' : 'text-slate-800'}`}>
+                {day}
+              </span>
+              {isNewMonth && (
+                <span className="absolute bottom-0.5 left-0 w-full truncate px-1.5 text-sm font-semibold text-slate-300 sm:bottom-0 sm:text-lg lg:bottom-2.5 lg:left-3.5 lg:-mb-1 lg:w-fit lg:px-0 lg:text-xl 2xl:mb-[-4px] 2xl:text-2xl">
+                  {monthNames[month]}
+                </span>
+              )}
+              <button type="button" onClick={() => {}} className="group absolute right-2 top-2 rounded-full opacity-0 transition-all focus:opacity-100 group-hover:opacity-100">
+                <svg className="size-8 scale-90 text-blue-500 transition-all hover:scale-100 group-focus:scale-100" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                  <path fillRule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4.243a1 1 0 1 0-2 0V11H7.757a1 1 0 1 0 0 2H11v3.243a1 1 0 1 0 2 0V13h3.243a1 1 0 1 0 0-2H13V7.757Z" clipRule="evenodd"/>
+                </svg>
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    ));
 
     return calendar;
   }, [year]);
 
   useEffect(() => {
-    const root = document.querySelector('.calendar-container') || document;
+    const calendarContainer = document.querySelector('.calendar-container');
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -138,7 +161,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ fullHeig
         });
       },
       {
-        root,
+        root: calendarContainer,
         rootMargin: '-75% 0px -25% 0px',
         threshold: 0,
       },
@@ -156,12 +179,12 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ fullHeig
   }, []);
 
   return (
-    <div className={`rounded-2xl bg-white pb-10 text-slate-800 ${fullHeight ? '' : 'calendar-container max-h-[80vh] overflow-y-scroll'}`}>
-      <div className="sticky -top-px z-50 w-full bg-white px-5 pt-7 sm:px-10 sm:pt-10">
+    <div className="no-scrollbar calendar-container max-h-full overflow-y-scroll rounded-t-2xl bg-white pb-10 text-slate-800 shadow-xl">
+      <div className="sticky -top-px z-50 w-full rounded-t-2xl bg-white px-5 pt-7 sm:px-8 sm:pt-8">
         <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-6">
           <div className="flex flex-wrap gap-2 sm:gap-3">
             <Select name="" value={`${selectedMonth}`} options={monthOptions} onChange={handleMonthChange} />
-            <button onClick={handleTodayClick} type="button" className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-100 sm:rounded-xl lg:px-5 lg:py-2.5">
+            <button onClick={handleTodayClick} type="button" className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-900 hover:bg-gray-100 lg:px-5 lg:py-2.5">
               Today
             </button>
             <button type="button" className="whitespace-nowrap rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-1.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-cyan-300 sm:rounded-xl lg:px-5 lg:py-2.5">
@@ -196,7 +219,7 @@ export const ContinuousCalendar: React.FC<ContinuousCalendarProps> = ({ fullHeig
           ))}
         </div>
       </div>
-      <div className="grid w-full grid-cols-7 px-5 pt-4 sm:px-10 sm:pt-6">
+      <div className="w-full px-5 pt-4 sm:px-8 sm:pt-6">
         {generateCalendar}
       </div>
     </div>
