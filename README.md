@@ -35,6 +35,13 @@ select {
 }
 ```
 
+### Props ❄️
+
+Prop | Required | Type | Description
+--- | --- | --- | --- |
+fullHeight | Optional | `boolean` (default `false`) | If you do not want to restrict the calendar to a specific max height, use `fullHeight` to properly display the entire calendar with adjusted navigation logic. |
+onClick | Optional | `(day:number, month: number, year: number) => void;` | Triggered whenever the user clicks a day on the calendar. |
+
 ### Contribution 🔮
 
 If you wish to contribute to this project, clone the repo and run it locally using `npm run dev`.
