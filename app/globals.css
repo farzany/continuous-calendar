@@ -1,9 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-*:focus:not(ol) {
-  @apply outline-none ring-2 ring-cyan-400 border-cyan-400;
+:root {
+  --gradient-radial: radial-gradient(var(--tw-gradient-stops));
+  --gradient-conic: conic-gradient(
+    from 180deg at 50% 50%,
+    var(--tw-gradient-stops)
+  );
+}
+
+@theme inline {
+  --bg-gradient-radial: var(--gradient-radial);
+  --bg-gradient-conic: var(--gradient-conic);
 }
 
 select {
@@ -11,17 +18,21 @@ select {
   -moz-appearance: none;
   appearance: none;
   text-indent: 1px;
-  text-overflow: '';
+  text-overflow: "";
 }
 
-@layer utilities {
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+@layer base {
+
+}
+  *:focus:not(ol) {
+    @apply outline-none ring-2 ring-cyan-400 border-cyan-400;
   }
-  /* Hide scrollbar for IE, Edge and Firefox */
-  .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
